@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>javascript</title>
+    <!--Internet Explorer 8 及更早 IE 版本的浏览器不支持以上的方式。-->
+    <!--针对IE浏览器html5shiv 是比较好的解决方案。html5shiv主要解决HTML5提出的新的元素不被IE6-8识别，这些新元素不能作为父节点包裹子元素，并且不能应用CSS样式。 -->
+    <!--[if lt IE 9]>
+      <script src="http://apps.bdimg.com/libs/html5shiv/3.7/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+<body>
+   <h3>JavaScript输出问题</h3>
+   <p>使用 window.alert() 弹出警告框</p>
+   <p>使用 document.write() 方法将内容写到 HTML 文档中。</p>
+   <p>使用 innerHTML 写入到 HTML 元素</p>
+   <p>使用 console.log() 写入到浏览器的控制台。</p>
+   <p id='demo'>MyHtml</p>
+   <p id='demolength'>Length</p>
+   <p>数据类型:string number boolean object function</p>
+   <p>对象类型:Date  Array Object</p>
+   <p>不含值数据类型：NULL undefined </p>
+   <p>正则表达式：1:语法：/pattern/modifiers ，var patt = /w3cschool/i; replace()  search()   test()   exec()</p>
+   <p id = 'regxdemo'></p>
+   <p>测试Git</p>
+</body>
+<script type="text/javascript">
+
+     // 局部变量会在函数运行以后被删除。
+     // 全局变量会在页面关闭后被删除。
+     var person = {
+     	firstName:"John", 
+     	lastName:"Doe", 
+     	age:50,
+     	eyeColor:"blue",
+     	// fullname: function() {
+     	// 	 return this.firstName + this.lastName;  
+     	// }
+     	fullName : function  () {
+              return this.firstName + " " + this.lastName;
+           }
+     };
+	 
+	 //document.write("Hello World!");
+	 document.getElementById("demo").innerHTML="Person:" + person.firstName + "." + person.lastName + "," + person["age"] + " Function:" + person.fullName() ;
+
+
+	 var txt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	 var fcharAt = txt.charAt(2);
+     var sln = txt.length;
+     document.getElementById('demolength').innerHTML = txt + " Length : " + sln  +
+                                                              " charAt(2): "  + fcharAt ;//查看API
+     //NULL 是一个只有一个值的特殊类型。表示一个空对象引用,设置为 null 来清空对象
+     //ex:var person = null; Value is null, but type is still an object
+     //undefined 是一个没有设置值的变量。
+     // typeof undefined    undefined
+     // typeof null         object
+     // null === undefined  false
+     // null == undefined   true
+
+     // var patt1 = new RegExp("HelloWorld");
+     // console.log (patt1.test("Goodmonring HelloWorld"));
+
+     var patt1=new RegExp("e");
+     document.write(patt1.test("The best things in life are free"));
+</script>
+</html>
