@@ -496,6 +496,7 @@
 	    // array: 指向Array对象本身
 	    alert(element);
 	});
+	注意，forEach()方法是ES5.1标准引入
 
 
 

@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8">
@@ -41,12 +41,12 @@
            }
      };
 	 
-	 //document.write("Hello World!");
-	 document.getElementById("demo").innerHTML="Person:" + person.firstName + "." + person.lastName + "," + person["age"] + " Function:" + person.fullName() ;
+	   //document.write("Hello World!");
+	   document.getElementById("demo").innerHTML="Person:" + person.firstName + "." + person.lastName + "," + person["age"] + " Function:" + person.fullName() ;
 
 
-	 var txt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	 var fcharAt = txt.charAt(2);
+	   var txt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	   var fcharAt = txt.charAt(2);
      var sln = txt.length;
      document.getElementById('demolength').innerHTML = txt + " Length : " + sln  +
                                                               " charAt(2): "  + fcharAt ;//查看API
@@ -63,5 +63,9 @@
 
      var patt1=new RegExp("e");
      document.write(patt1.test("The best things in life are free"));
+      
+     var a = 0xFFFFA;
+     var b = 0x0000B;
+     console.log(a+b);
 </script>
 </html>
