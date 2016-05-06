@@ -17,6 +17,7 @@
 //MapReduce
 'use strict';
 
+//['1','2','3','4'] 转化 1234 
 function string2int(s) {
     var arr = [] ;
     for(var i = 0 ; i< s.length ; i++){
@@ -35,18 +36,56 @@ function string2int(s) {
     return a;
   }
 
-  // 测试:
-  if (string2int('0') === 0 && string2int('12345') === 12345 && string2int('12300') === 12300) {
-      if (string2int.toString().indexOf('parseInt') !== -1) {
-          alert('请勿使用parseInt()!');
-      } else if (string2int.toString().indexOf('Number') !== -1) {
-          alert('请勿使用Number()!');
-      } else {
-          alert('测试通过!');
-      }
+  //柯里化函数
+  var multiple = function(a){
+    return function(b){
+      return +b*a + ''
+    }
   }
-  else {
-      alert('测试失败!');
+  var plus = function(a){
+    return function(b){
+      return (+b)+a + ''
+    }
   }
+  var concatArray = function(chars, stylishChar){
+    return chars.map(stylishChar)
+      .reduce(function(a,b){
+        return a.concat(b)
+    });
+  }
+  console.log(concatArray(['1','2','3'], multiple(2)))
+  console.log(concatArray(['1','2','3'], plus(2)))
+
+
+// 定义数字1:
+var one = function (f) {
+    return function (x) {
+        return f(x);
+    }
+};
+
+// 定义加法:
+function add(n, m) {
+    return function (f) {
+        return function (x) {
+            return m(f)(n(f)(x));
+        }
+    }
+}
+
+//组合新函数two three
+var two = add(one,one);
+
+//add(two,one)=>function(){console.log('print 2 times')})=>()  
+//two(f)([one(f)()]) = add(one,one)([one(f)()])
+
+var three = add(one,two);
+(one(function () {
+    console.log('print 3 times');
+}))();
+(three(function () {
+    console.log('print 3 times');
+}))();
+
 </script>
 </html>

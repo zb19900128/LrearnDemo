@@ -1,0 +1,20 @@
+   Haskell
+   Haskell 中的函數可以接受函數作為參數也可以返回函數作為結果，這樣的函數就被稱作高階函數。高階函數可不只是某簡單特性而已，它貫穿于 Haskell 的方方面面。要拒絶循環與狀態的改變而通過定義問題"是什麼"來解決問題，高階函數必不可少。它們是編碼的得力工具。
+   Curried functions
+
+    // a curried add()  
+	// accepts partial list of arguments  
+	function add(x, y) {  
+	    var oldx = x, oldy = y;  
+	    if (typeof oldy === "undefined") { // partial  
+	        return function (newy) {  
+	            return oldx + newy;  
+	        };  
+	    }  
+	    // full application  
+	    return x + y;  
+	}  
+	// test  
+	typeof add(5); // "function"  
+	add(3)(4);     //[add(3)](4); [add(3)] = f => f(4)
+    add(3)(4)(5);  //[add(3)(4)] = f => f(5)
