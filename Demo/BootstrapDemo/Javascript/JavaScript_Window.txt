@@ -1,0 +1,176 @@
+JavaScript DOM
+	JavaScript可以获取浏览器提供的很多对象，并进行操作
+	window对象不但充当全局作用域，而且表示浏览器窗口。
+	navigator对象表示浏览器的信息，最常用的属性包括：
+	navigator.appName：浏览器名称；
+	navigator.appVersion：浏览器版本；
+	navigator.language：浏览器设置的语言；
+	navigator.platform：操作系统类型；
+	navigator.userAgent：浏览器设定的User-Agent字符串。
+
+	请注意，navigator的信息可以很容易地被用户修改，所以JavaScript读取的值不一定是正确的。很多初学者为了针对不同浏览器编写不同的代码，喜欢用if判断浏览器版本
+	var width;
+	if (getIEVersion(navigator.userAgent) < 9) {
+	    width = document.body.clientWidth;
+	} else {
+	    width = window.innerWidth;
+	}
+	正确的方法是充分利用JavaScript对不存在属性返回undefined的特性，直接用短路运算符||计算：
+	var width = window.innerWidth || document.body.clientWidth;
+
+	screen
+	screen对象表示屏幕的信息，常用的属性有：
+	screen.width：屏幕宽度，以像素为单位；
+	screen.height：屏幕高度，以像素为单位；
+	screen.colorDepth：返回颜色位数，如8、16、24。
+
+	location
+	location对象表示当前页面的URL信息。例如，一个完整的URL：
+	http://www.example.com:8080/path/index.html?a=1&b=2#TOP
+	可以用location.href获取。要获得URL各个部分的值，可以这么写：
+	location.protocol; // 'http'
+	location.host; // 'www.example.com'
+	location.port; // '8080'
+	location.pathname; // '/path/index.html'
+	location.search; // '?a=1&b=2'
+	location.hash; // 'TOP'
+	
+	document
+	document对象表示当前页面。由于HTML在浏览器中以DOM形式表示为树形结构，document对象就是整个DOM树的根节点。
+	document的title属性是从HTML文档中的<title>xxx</title>读取的，但是可以动态改变.
+    document对象还有一个cookie属性，可以获取当前页面的Cookie。
+    Cookie是由服务器发送的key-value标示符。因为HTTP协议是无状态的，但是服务器要区分到底是哪个用户发过来的请求，就可以用Cookie来区分。当一个用户成功登录后，服务器发送一个Cookie给浏览器，例如user=ABC123XYZ(加密的字符串)...，此后，浏览器访问该网站时，会在请求头附上这个Cookie，服务器根据Cookie即可区分出用户。
+    如果引入的第三方的JavaScript中存在恶意代码，则www.foo.com网站将直接获取到www.example.com网站的用户登录信息。
+	为了解决这个问题，服务器在设置Cookie时可以使用httpOnly，设定了httpOnly的Cookie将不能被JavaScript读取。这个行为由浏览器实现，主流浏览器均支持httpOnly选项，IE从IE6 SP1开始支持。
+    为了确保安全，服务器端在设置Cookie时，应该始终坚持使用httpOnly。
+
+    history
+    history对象保存了浏览器的历史记录，JavaScript可以调用history对象的back()或forward ()，相当于用户点击了浏览器的“后退”或“前进”按钮。
+    这个对象属于历史遗留对象，对于现代Web页面来说，由于大量使用AJAX和页面交互，简单粗暴地调用history.back()可能会让用户感到非常愤怒。
+    新手开始设计Web页面时喜欢在登录页登录成功时调用history.back()，试图回到登录前的页面。这是一种错误的方法。
+    任何情况，你都不应该使用history这个对象了。
+
+    操作DOM
+    由于HTML文档被浏览器解析后就是一棵DOM树，要改变HTML的结构，就需要通过JavaScript来操作DOM。
+    始终记住DOM是一个树形结构。操作一个DOM节点实际上就是这么几个操作：
+    更新：更新该DOM节点的内容，相当于更新了该DOM节点表示的HTML的内容；
+    遍历：遍历该DOM节点下的子节点，以便进行进一步操作；
+    添加：在该DOM节点下新增一个子节点，相当于动态增加了一个HTML节点；
+    删除：将该节点从HTML中删除，相当于删掉了该DOM节点的内容以及它包含的所有子节点。
+    在操作一个DOM节点前，我们需要通过各种方式先拿到这个DOM节点。最常用的方法是document.getElementById()和document.getElementsByTagName()，以及CSS选择器document.getElementsByClassName()。
+    由于ID在HTML文档中是唯一的，所以document.getElementById()可以直接定位唯一的一个DOM节点。document.getElementsByTagName()和document.getElementsByClassName()总是返回一组DOM节点。要精确地选择DOM，可以先定位父节点，再从父节点开始选择，以缩小范围。
+
+    更新DOM
+    第一种是修改innerHTML属性，这个方式非常强大，不但可以修改一个DOM节点的文本内容，还可以直接通过HTML片段修改DOM节点内部的子树：
+	用innerHTML时要注意，是否需要写入HTML。如果写入的字符串是通过网络拿到了，要注意对字符编码来避免XSS攻击。
+    第二种是修改innerText或textContent属性，这样可以自动对字符串进行HTML编码，保证无法设置任何HTML标签。
+
+	插入DOM
+	1.如果这个DOM节点是空的，例如，<div></div>，那么，直接使用innerHTML = '<span>child</span>'就可以修改DOM节点的内容，相当于“插入”了新的DOM节点。
+	2.如果这个DOM节点不是空的，那就不能这么做，因为innerHTML会直接替换掉原来的所有子节点。
+	有两个办法可以插入新的节点。一个是使用appendChild，把一个子节点添加到父节点的最后一个子节点
+	<!-- HTML结构 -->
+	<p id="js">JavaScript</p>
+	<div id="list">
+	    <p id="java">Java</p>
+	    <p id="python">Python</p>
+	    <p id="scheme">Scheme</p>
+	</div>
+	var js = document.getElementById('js'),
+	    list = document.getElementById('list');
+    list.appendChild(js);
+
+    如果我们要把子节点插入到指定的位置怎么办？可以使用parentElement.insertBefore(newElement, referenceElement);，子节点会插入到referenceElement之前。
+    <!-- HTML结构 -->
+	<div id="list">
+	    <p id="java">Java</p>
+	    <p id="python">Python</p>
+	    <p id="scheme">Scheme</p>
+	</div>
+	var  list = document.getElementById('list'),
+         ref = document.getElementById('python'),
+    haskell = document.createElement('p');
+	haskell.id = 'haskell';
+	haskell.innerText = 'Haskell';
+	list.insertBefore(haskell, ref);
+
+	删除DOM
+	删除一个DOM节点就比插入要容易得多。
+    要删除一个节点，首先要获得该节点本身以及它的父节点，然后，调用父节点的removeChild把自己删掉：
+    <div id="parent">
+	    <p>First</p>
+	    <p>Second</p>
+	</div>
+	var parent = document.getElementById('parent');
+	parent.removeChild(parent.children[0]);
+	parent.removeChild(parent.children[1]); // <-- 浏览器报错
+	浏览器报错：parent.children[1]不是一个有效的节点。原因就在于，当<p>First</p>节点被删除后，parent.children的节点数量已经从2变为了1，索引[1]已经不存在了。删除多个节点时，要注意children属性时刻都在变化。
+
+	操作表单
+	用JavaScript操作表单和操作DOM是类似的，因为表单本身也是DOM树。
+	不过表单的输入框、下拉框等可以接收用户输入，所以用JavaScript来操作表单，可以获得用户输入的内容，或者对一个输入框设置新的内容。
+	HTML表单的输入控件主要有以下几种：
+	文本框，对应的<input type="text">，用于输入文本；
+	口令框，对应的<input type="password">，用于输入口令；
+	单选框，对应的<input type="radio">，用于选择一项；
+	复选框，对应的<input type="checkbox">，用于选择多项；
+	下拉框，对应的<select>，用于选择一项；
+	隐藏文本，对应的<input type="hidden">，用户不可见，但表单提交时会把隐藏文本发送到服务器。
+    // <input type="text" id="email">
+	var input = document.getElementById('em ail');
+	input.value; // '用户输入的值'
+	
+	获取值：如果我们获得了一个<input>节点的引用，就可以直接调用value获得对应的用户输入值：
+	这种方式可以应用于text、password、hidden以及select。但是，对于单选框和复选框，value属性返回的永远是HTML预设的值，而我们需要获得的实际是用户是否“勾上了”选项，所以应该用checked判断。
+
+	设置值：设置值和获取值类似，对于text、password、hidden以及select，直接设置value就可以
+    // <input type="text" id="email">
+	var input = document.getElementById('email');
+	input.value = 'test@example.com'; // 文本框的内容已更新
+
+	提交表单
+	JavaScript可以以两种方式来处理表单的提交（AJAX方式在后面章节介绍）。
+	第一种方式是通过<form>元素的submit()方法提交一个表单。
+	第二种方式是响应<form>本身的onsubmit事件，在提交form时作修改
+
+	操作文件
+	在HTML表单中，可以上传文件的唯一控件就是<input type="file">。
+	注意：当一个表单包含<input type="file">时，表单的enctype必须指定为multipart/form-data，method必须指定为post，浏览器才能正确编码并以multipart/form-data格式发送表单的数据。
+	出于安全考虑，浏览器只允许用户点击<input type="file">来选择本地文件，用JavaScript对<input type="file">的value赋值是没有任何效果的。当用户选择了上传某个文件后，JavaScript也无法获得该文件的真实路径：
+	通常，上传的文件都由后台服务器处理，JavaScript可以在提交表单时对文件扩展名做检查，以便防止用户上传无效格式的文件
+
+	File API
+	由于JavaScript对用户上传的文件操作非常有限，尤其是无法读取文件内容，使得很多需要操作文件的网页不得不用Flash这样的第三方插件来实现。
+    随着HTML5的普及，新增的File API允许JavaScript读取文件内容，获得更多的文件信息。
+    HTML5的File API提供了File和FileReader两个主要对象，可以获得文件信息并读取文件。
+
+    回调
+    在JavaScript中，浏览器的JavaScript执行引擎在执行JavaScript代码时，总是以单线程模式执行，也就是说，任何时候，JavaScript代码都不可能同时有多于1个线程在执行。
+    在JavaScript中，执行多任务实际上都是异步调用
+    就会发起一个异步操作来读取文件内容。因为是异步操作，所以我们在JavaScript代码中就不知道什么时候操作结束，因此需要先设置一个回调函数：
+	reader.onload = function(e) {
+	    // 当文件读取完成后，自动调用此函数:
+	};
+	当文件读取完成后，JavaScript引擎将自动调用我们设置的回调函数。执行回调函数时，文件已经读取完毕，所以我们可以在回调函数内部安全地获得文件内容。
+
+    AJAX
+    通过检测window对象是否有XMLHttpRequest属性来确定浏览器是否支持标准的XMLHttpRequest。注意，不要根据浏览器的navigator.userAgent来检测浏览器是否支持某个JavaScript特性，一是因为这个字符串本身可以伪造，二是通过IE版本判断JavaScript特性将非常复杂。
+
+    当创建了XMLHttpRequest对象后，要先设置onreadystatechange的回调函数。在回调函数中，通常我们只需通过readyState === 4判断请求是否完成，
+    如果已完成，再根据status === 200判断是否是一个成功的响应。
+    XMLHttpRequest对象的open()方法有3个参数：
+    第一个参数指定是GET还是POST，第二个参数指定URL地址，第三个参数指定是否使用异步，默认是true，所以不用写。
+    （注意，千万不要把第三个参数指定为false，否则浏览器将停止响应，直到AJAX请求完成。如果这个请求耗时10秒，那么10秒内你会发现浏览器处于“假死”状态。）
+    最后调用send()
+    方法才真正发送请求。GET请求不需要参数，POST请求需要把body部分以字符串或者FormData对象传进去。
+
+    安全限制
+    上面代码的URL使用的是相对路径。
+    如果你把它改为'http://www.sina.comcn/'，再运行，肯定报错。在Chrome的控制台里，还可以看到错误信息。
+    这是因为浏览器的同源策略导致的。默认情况下，JavaScript在发送AJAX请求时，URL的域名必须和当前页面完全一致。
+    完全一致的意思是，域名要相同（www.example.com和example.com不同），协议要相同（http和https不同），端口号要相同（默认是:80端口，它和:8080就不同）。有的浏览器口子松一点，允许端口不同，大多数浏览器都会严格遵守这个限制。
+    一是通过Flash插件发送HTTP请求，这种方式可以绕过浏览器的安全限制，但必须安装Flash，并且跟Flash交互。不过Flash用起来麻烦，而且现在用得也越来越少了。
+    二是通过在同源域名下架设一个代理服务器来转发，JavaScript负责把请求发送到代理服务器，代理服务器再把结果返回，这样就遵守了浏览器的同源策略。这种方式麻烦之处在于需要服务器端额外做开发。
+    三是称为JSONP，它有个限制，只能用GET请求，并且要求返回JavaScript。这种方式跨域实际上是利用了浏览器允许跨域引用JavaScript资源：
+    四是CORS 如果浏览器支持HTML5，那么就可以一劳永逸地使用新的跨域策略：CORS了
+    Origin表示本域，也就是浏览器当前页面的域。当JavaScript向外域（如sina.com）发起请求后，浏览器收到响应后，首先检查Access-Control-Allow-Origin是否包含本域，如果是，则此次跨域请求成功，如果不是，则请求失败，JavaScript将无法获取到响应的任何数据。
